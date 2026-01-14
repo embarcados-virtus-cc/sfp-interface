@@ -217,6 +217,36 @@ int main(void)
     } else {
         printf("\nRF-02: pulado (pre-condicao: Byte 0 precisa ser 0x03 / SFP).\n");
     }
+
+    /* =====================================================
+    * Task — Bytes 60-61: Nominal Wavelength (nm)
+    * ===================================================== */
+    if (id == SFP_ID_SFP) {
+        uint8_t wl_buf[2] = {0};
+
+        bool ok_wl = sfp_read_block(
+            I2C_PORT,
+            SFP_I2C_ADDR_A0,
+            60,          // offset inicial = 60
+            wl_buf,
+            2            // lê 2 bytes (60 e 61)
+        );
+
+        if (!ok_wl) {
+            printf("ERRO: Falha na leitura do comprimento de onda (Bytes 60-61)\n");
+            while (1) { sleep_ms(250); }
+        }
+
+        uint16_t wavelength_nm = ((uint16_t)wl_buf[0] << 8) | wl_buf[1];
+
+        printf("\nBytes 60-61 — Nominal Wavelength:\n");
+        printf("Raw: MSB=0x%02X LSB=0x%02X\n", wl_buf[0], wl_buf[1]);
+        printf("Wavelength: %u nm\n", wavelength_nm);
+
+        a0.media_info.wavelength = wavelength_nm;
+    } else {
+        printf("\nWavelength: pulado (pre-condicao: Byte 0 precisa ser 0x03 / SFP).\n");
+    }
     
     /* =============================================================
      * Teste dos Bytes 3-10 — Códigos de Conformidade do Transceptor
