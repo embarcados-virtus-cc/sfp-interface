@@ -645,8 +645,8 @@ void sfp_parse_a0_base_cc_base(const uint8_t *a0_base_data, sfp_a0h_base_t *a0)
     /* Adiciona o byte 63 (CC_BASE) */
     uint8_t checksum_byte = a0_base_data[63];
 
-    /* Verifica se a soma total é 0 */
-    a0->cc_base_is_valid = ((sum_mod256 + checksum_byte) == 0);
+    /* Verifica se a soma total é  igual ao checksum*/
+   a0->cc_base_is_valid = (sum_mod256 == checksum_byte);
 
     /* Armazena o byte do checksum para referência */
     a0->cc_base = checksum_byte;
